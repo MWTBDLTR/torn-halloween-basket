@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn Halloween Basket Route
 // @namespace    church-tools
-// @version      1.0.3
+// @version      1.0.4
 // @author       MrChurch [3654415]
 // @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel. Read-only: never clicks or requests anything.
 // @match        https://www.torn.com/item.php*
@@ -16,7 +16,7 @@
   var steps = [{ id: 1, name: "I See Dead People", tier: "I", note: "" }, { id: 2, name: "Here's Johnny!", tier: "I", note: "" }, { id: 3, name: "Doubler", tier: "I", note: "" }, { id: 4, name: "Tripler", tier: "I", note: "" }, { id: 5, name: "Quadrupler", tier: "I", note: "" }, { id: 13, name: "Cat in Hell", tier: "III", note: "" }, { id: 6, name: "Quintupler", tier: "I", note: "" }, { id: 23, name: "Shadow of Doubt", tier: "IV", note: "+1,100 treats, which count toward basket progress. Getting here from step 7 takes roughly an entire event's worth of attacking" }, { id: 19, name: "Multipack", tier: "IV", note: "" }, { id: 20, name: "Deal with the Devil", tier: "IV", note: "" }, { id: 18, name: "Dark Power", tier: "III", note: "" }, { id: 15, name: "Freebie", tier: "III", note: "" }, { id: 9, name: "Bloody Mary", tier: "II", note: "" }, { id: 10, name: "Nice Chianti", tier: "II", note: "" }, { id: 11, name: "Nightcrawler", tier: "II", note: "" }, { id: 12, name: "It's Alive", tier: "II", note: "" }, { id: 17, name: "Cashback", tier: "III", note: "" }, { id: 7, name: "Candyman", tier: "II", note: "" }, { id: 8, name: "Sweet Release", tier: "II", note: "" }, { id: 16, name: "Cold Sweat", tier: "III", note: "+1 nerve per treat; assumes Crimes 2.0 is unlocked" }];
   var never = [14, 21, 22, 24];
 
-  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n';
+  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n\n.use-halloween-basket .hbr-guide {\n  color: #f39c12;\n  text-decoration: underline;\n}\n';
 
   var num = (s) => Number(String(s).replace(/[^\d]/g, "")) || 0;
   var BASKET_SELECTOR = ".use-halloween-basket";
@@ -68,6 +68,7 @@
   var STATUS_CLASS = "hbr-status";
   var BADGE_CLASS = "hbr-badge";
   var MARK_CLASSES = ["hbr-route", "hbr-done", "hbr-next", "hbr-never"];
+  var GUIDE_URL = "https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0";
   var REASON_TEXT = {
     ready: "",
     short: "not enough treats yet",
@@ -78,6 +79,15 @@
     badge.className = BADGE_CLASS;
     badge.textContent = text;
     el.append(badge);
+  }
+  function setStatus(status, text) {
+    const guide = document.createElement("a");
+    guide.className = "hbr-guide";
+    guide.href = GUIDE_URL;
+    guide.target = "_blank";
+    guide.rel = "noopener";
+    guide.textContent = "Halloween guide";
+    status.replaceChildren(`${text} · `, guide);
   }
   function paint(root, { steps: route, never: never2 }, state, costs) {
     clear(root);
@@ -91,7 +101,7 @@
     status.className = STATUS_CLASS;
     root.querySelector(".treats-bar")?.after(status);
     if (!route.length) {
-      status.textContent = "Route: no steps in ROUTE.md yet.";
+      setStatus(status, "Route: no steps in ROUTE.md yet.");
       return;
     }
     route.forEach((step, i) => {
@@ -104,7 +114,7 @@
     const next = nextStep(route, state, costs);
     const { done, total } = progress(route, state);
     if (!next) {
-      status.textContent = done === total ? `Route complete (${done}/${total}).` : `Route ${done}/${total}.`;
+      setStatus(status, done === total ? `Route complete (${done}/${total}).` : `Route ${done}/${total}.`);
       return;
     }
     state.upgrades.get(next.step.id)?.el.classList.add("hbr-next");
@@ -116,7 +126,7 @@
       REASON_TEXT[next.reason] || null,
       next.step.note || null
     ].filter(Boolean);
-    status.textContent = parts.join(" · ");
+    setStatus(status, parts.join(" · "));
     status.dataset.reason = next.reason;
   }
   function clear(root) {

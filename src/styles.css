@@ -64,3 +64,8 @@
 .use-halloween-basket .hbr-status[data-reason="short"] {
   border-left-color: #888;
 }
+
+.use-halloween-basket .hbr-guide {
+  color: #f39c12;
+  text-decoration: underline;
+}

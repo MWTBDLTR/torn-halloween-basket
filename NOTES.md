@@ -90,6 +90,10 @@ Paints the route onto the basket: a step number on each route upgrade, a ring on
 a ✕ on never-buy upgrades, and a status line under the treats bar. It only adds nodes and
 classes of its own and `clear` removes exactly those.
 
+Every status line ends with a link to the Halloween guide forum thread (`GUIDE_URL`), set by
+`setStatus`. It opens in a new tab so the basket stays open. It is a plain link the user
+clicks; the script itself never follows it or fetches anything.
+
 `isPainted` is true while what `paint` added is still in the DOM. Torn re-renders the panel
 wholesale after an upgrade, which drops our nodes, and that is how the entry point notices.
 

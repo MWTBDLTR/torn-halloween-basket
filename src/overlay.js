@@ -3,6 +3,7 @@ import { nextStep, progress } from "./route.js";
 const STATUS_CLASS = "hbr-status";
 const BADGE_CLASS = "hbr-badge";
 const MARK_CLASSES = ["hbr-route", "hbr-done", "hbr-next", "hbr-never"];
+const GUIDE_URL = "https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0";
 
 const REASON_TEXT = {
   ready: "",
@@ -15,6 +16,16 @@ function addBadge(el, text) {
   badge.className = BADGE_CLASS;
   badge.textContent = text;
   el.append(badge);
+}
+
+function setStatus(status, text) {
+  const guide = document.createElement("a");
+  guide.className = "hbr-guide";
+  guide.href = GUIDE_URL;
+  guide.target = "_blank";
+  guide.rel = "noopener";
+  guide.textContent = "Halloween guide";
+  status.replaceChildren(`${text} · `, guide);
 }
 
 export function paint(root, { steps: route, never }, state, costs) {
@@ -32,7 +43,7 @@ export function paint(root, { steps: route, never }, state, costs) {
   root.querySelector(".treats-bar")?.after(status);
 
   if (!route.length) {
-    status.textContent = "Route: no steps in ROUTE.md yet.";
+    setStatus(status, "Route: no steps in ROUTE.md yet.");
     return;
   }
 
@@ -47,7 +58,7 @@ export function paint(root, { steps: route, never }, state, costs) {
   const next = nextStep(route, state, costs);
   const { done, total } = progress(route, state);
   if (!next) {
-    status.textContent = done === total ? `Route complete (${done}/${total}).` : `Route ${done}/${total}.`;
+    setStatus(status, done === total ? `Route complete (${done}/${total}).` : `Route ${done}/${total}.`);
     return;
   }
 
@@ -60,7 +71,7 @@ export function paint(root, { steps: route, never }, state, costs) {
     REASON_TEXT[next.reason] || null,
     next.step.note || null,
   ].filter(Boolean);
-  status.textContent = parts.join(" · ");
+  setStatus(status, parts.join(" · "));
   status.dataset.reason = next.reason;
 }
 
