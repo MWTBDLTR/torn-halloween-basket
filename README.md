@@ -40,6 +40,9 @@ misspelled or repeated upgrade name fails the build. Source files carry no comme
 on how each part works are in [NOTES.md](NOTES.md). Commit the rebuilt `dist/` file with every
 change, and bump `version` in `package.json`, which becomes `@version`.
 
+A GitHub Actions check rebuilds on every push to `main` and fails if the committed `dist/` file
+differs from the fresh build. It only checks; it never commits.
+
 ## License
 
 [CC BY-NC-SA 4.0](LICENSE)
