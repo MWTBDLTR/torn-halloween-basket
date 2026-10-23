@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn Halloween Basket Route
 // @namespace    church-tools
-// @version      1.0.6
+// @version      1.0.7
 // @author       MrChurch [3654415]
 // @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel. Read-only: never clicks or requests anything.
 // @match        https://www.torn.com/item.php*
@@ -193,7 +193,7 @@
         fillCard(card, up, ctx);
         showCard(root, card, hit);
       });
-      up.el.after(hit);
+      up.el.parentElement.append(hit);
     }
   }
   function hideCards() {

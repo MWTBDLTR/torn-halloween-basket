@@ -107,7 +107,9 @@ treats held are. Torn only sends an upgrade's description when it is clicked, an
 tier's buttons are `disabled`, so the card is built from the catalog and Torn's buttons are
 left alone. Firefox delivers no mouse events to a disabled button or its children, so each
 locked button gets a transparent `.hbr-hit` sibling at the same absolute position in its slide
-that takes the hover and the tap. A tap stops propagation, so Torn's handlers and the slider
+that takes the hover and the tap. The hits are appended after all of the slide's buttons, never
+between them: Torn places each button on the wheel by its `:nth-child` position, and a hit
+inserted next to each button (1.0.6) pushed five of the six off their spots. A tap stops propagation, so Torn's handlers and the slider
 never see it. There is one `.hbr-card` per panel, filled and positioned under the hovered
 upgrade, clamped to the panel's width, and hidden with the `hidden` attribute, which the
 `MutationObserver` does not watch. `hideCards` hides every card on any click outside a hit.

@@ -85,7 +85,7 @@ function addInfoCards(root, ctx) {
       fillCard(card, up, ctx);
       showCard(root, card, hit);
     });
-    up.el.after(hit);
+    up.el.parentElement.append(hit);
   }
 }
 
