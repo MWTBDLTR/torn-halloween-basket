@@ -68,9 +68,11 @@ states a cost, which is why `pending` exists.
 GM storage with a `localStorage` fallback, keys prefixed `hbr_` like the other scripts'
 prefixes. A write that fails (storage unavailable) is ignored: costs are just not remembered.
 
-Upgrade costs are only visible in the confirmation box after clicking an upgrade, so
-`rememberCost` keeps each one seen, as `hbr_costs = { [upgradeId]: treats }`, and
-`knownCosts` reads them back.
+Torn only states a cost in the confirmation box after an upgrade is clicked, so `rememberCost`
+keeps each one seen, as `hbr_costs = { [upgradeId]: treats }`, and `knownCosts` reads them
+back. The status line and `nextStep` use only these seen costs. The info card uses them ahead
+of the catalog's cost from `upgrades.js`, so a price Torn changes is picked up on the first
+click without a new release.
 
 ## src/route.js
 
@@ -109,8 +111,8 @@ left alone. Firefox delivers no mouse events to a disabled button or its childre
 locked button gets a transparent `.hbr-hit` sibling at the same absolute position in its slide
 that takes the hover and the tap. The hits are appended after all of the slide's buttons, never
 between them: Torn places each button on the wheel by its `:nth-child` position, and a hit
-inserted next to each button (1.0.6) pushed five of the six off their spots. A tap stops propagation, so Torn's handlers and the slider
-never see it. There is one `.hbr-card` per panel, filled and positioned under the hovered
+inserted next to each button (1.0.6) pushed five of the six off their spots. A tap stops
+propagation, so Torn's handlers and the slider never see it. There is one `.hbr-card` per panel, filled and positioned under the hovered
 upgrade, clamped to the panel's width, and hidden with the `hidden` attribute, which the
 `MutationObserver` does not watch. `hideCards` hides every card on any click outside a hit.
 
@@ -150,3 +152,11 @@ gone.
 - Torn pulls `.updates-grid` up under the treats bar with `margin-top: -35px`. The status
   note's 41px bottom margin pays that back so the wheel's top circle starts below the note
   instead of over it.
+- `.updates-grid-slide` takes `left: var(--hbr-wheel-shift, 0px)`, the shift `centreWheel`
+  sets; Torn already makes that element `position: relative`.
+- `.hbr-hit` is a transparent circle over a locked button. It sets `pointer-events: auto`
+  because it lives inside Torn's disabled slide, and `z-index: 4` to sit above the badge.
+- `.hbr-card` is positioned by script and has `pointer-events: none`, so it never steals the
+  hover from the hit under the cursor. Its `[hidden]` rule is explicit so that no page
+  style setting `display` on it can show a hidden card.
+- `.hbr-guide` only sets colour and underline on the status note's link.
