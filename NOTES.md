@@ -66,13 +66,17 @@ states a cost, which is why `pending` exists.
 ## src/storage.js
 
 GM storage with a `localStorage` fallback, keys prefixed `hbr_` like the other scripts'
-prefixes. A write that fails (storage unavailable) is ignored: costs are just not remembered.
+prefixes. A write that fails (storage unavailable) is ignored: costs are just not remembered, and the
+exchange lock falls back to locked on the next paint.
 
 Torn only states a cost in the confirmation box after an upgrade is clicked, so `rememberCost`
 keeps each one seen, as `hbr_costs = { [upgradeId]: treats }`, and `knownCosts` reads them
 back. The entry point lays them over `CATALOG_COSTS` from `upgrades.js`, so the status line,
 `nextStep` and the info card all see the guide's cost until Torn states one, and a price Torn
 changes is picked up on the first click without a new release.
+
+`exchangeLocked` / `setExchangeLocked` keep the exchange lock as `hbr_exchange_locked`,
+locked unless the user unticks it.
 
 ## src/route.js
 
@@ -125,8 +129,21 @@ half the difference (18px) right of centre. It sets `--hbr-wheel-shift` on the p
 `left`; when the two widths match the shift is 0. CSS alone cannot do it: making the viewport
 a size container for `cqw` units collapses it, because it is a flex item sized by its content.
 
+`addExchangeLock` puts a "Lock exchange" checkbox after Torn's Exchange all treats button
+(`.exchange-action .exchange-btn`), outside the wheel, so no `:nth-child` placement is
+affected. It is positioned absolutely and takes no space in the row: `.exchange-action` is a
+flex row justified to the end, and as a flex item (first draft of 1.1.0) the checkbox pushed
+the button 109px left, over the wheel's lower-right icon. While it is ticked the panel carries `hbr-exchange-locked`: the stylesheet fades the
+button and turns off its pointer events, and `blockExchange`, a capture-phase click listener on
+the document, cancels any click that still reaches the button (keyboard Enter or Space) before
+Torn's own handlers see it. Torn sets and clears the button's `disabled` attribute itself, so
+the lock never touches it and Torn's state is left as it was. The checkbox's clicks stop at
+its label. The choice is stored as `hbr_exchange_locked` and defaults to locked.
+
 `isPainted` is true while what `paint` added is still in the DOM. Torn re-renders the panel
 wholesale after an upgrade, which drops our nodes, and that is how the entry point notices.
+It also checks for the lock checkbox when an exchange button is present, so a re-render of
+just that row repaints too.
 
 ## src/index.js
 
@@ -140,6 +157,8 @@ neither changes the DOM tree the `MutationObserver` watches. Observing an elemen
 no-op, so `watchSize` can run on every paint.
 
 A document click listener calls `hideCards`, so tapping anywhere else closes an info card.
+`blockExchange` is registered on the document in the capture phase, so it runs before any
+handler Torn has on the panel.
 
 `signature` covers everything that changes what would be drawn (treats, locked tiers, each
 upgrade's unlocked/locked state, costs). Our own nodes are not part of it, so painting
@@ -160,4 +179,11 @@ gone.
 - `.hbr-card` is positioned by script and has `pointer-events: none`, so it never steals the
   hover from the hit under the cursor. Its `[hidden]` rule is explicit so that no page
   style setting `display` on it can show a hidden card.
+- `.hbr-exchange-locked .exchange-btn` fades the exchange button and sets
+  `pointer-events: none`.
+- `.exchange-action` becomes `position: relative` so `.hbr-lock` can sit absolutely in its
+  bottom-right corner, inside the row's 15px bottom padding, right under the button. Above the
+  button there is only about 15px before the wheel's tier IV icons, and in the row itself it
+  would move the button, so the padding is the one free spot. The checkbox and font are sized
+  to fit that 15px.
 - `.hbr-guide` only sets colour and underline on the status note's link.

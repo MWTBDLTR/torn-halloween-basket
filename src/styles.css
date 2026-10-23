@@ -122,3 +122,32 @@
   margin-top: 6px;
   color: #bbb;
 }
+
+.use-halloween-basket.hbr-exchange-locked .exchange-btn {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.use-halloween-basket .exchange-action {
+  position: relative;
+}
+
+.use-halloween-basket .hbr-lock {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 15px;
+  color: #ddd;
+  font: 11px/15px Arial, sans-serif;
+  cursor: pointer;
+  user-select: none;
+}
+
+.use-halloween-basket .hbr-lock input {
+  width: 11px;
+  height: 11px;
+  margin: 0;
+}

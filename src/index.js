@@ -1,7 +1,7 @@
 import { steps, never } from "virtual:route";
 import css from "./styles.css";
 import { BASKET_SELECTOR, readBasket } from "./basket.js";
-import { paint, isPainted, centreWheel, hideCards } from "./overlay.js";
+import { paint, isPainted, centreWheel, hideCards, blockExchange } from "./overlay.js";
 import { rememberCost, knownCosts } from "./storage.js";
 import { CATALOG_COSTS } from "./upgrades.js";
 
@@ -50,6 +50,7 @@ function schedule() {
 }
 
 addStyle(css);
+document.addEventListener("click", blockExchange, true);
 document.addEventListener("click", hideCards);
 new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
 schedule();

@@ -25,3 +25,6 @@ export function rememberCost(id, cost) {
 }
 
 export const knownCosts = () => getValue("costs", {});
+
+export const exchangeLocked = () => getValue("exchange_locked", true);
+export const setExchangeLocked = (locked) => setValue("exchange_locked", locked);

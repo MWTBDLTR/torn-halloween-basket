@@ -12,12 +12,14 @@ When you open the basket on the Items page, it:
 - shows a line under the treats bar naming the next step, its tier, its cost, and
   whether its tier is still locked or you are short on treats, with a link to the Halloween
   guide,
+- adds a "Lock exchange" checkbox next to Exchange all treats, ticked by default, that
+  blocks the button so it can't spend your treats by accident,
 - keeps the wheel centred when the window is narrow.
 
 Upgrades bought out of order count as done, and the route picks up from the next one.
 
-It only reads the page you are viewing and adds its own marks. It never clicks anything and
-makes no requests, in line with Torn's rules on scripts.
+It only reads the page you are viewing, adds its own marks, and can block the exchange
+button. It never clicks anything and makes no requests, in line with Torn's rules on scripts.
 
 ## Install
 

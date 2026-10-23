@@ -1,7 +1,10 @@
 import { nextStep, progress } from "./route.js";
 import { findUpgrade, tierOf } from "./upgrades.js";
+import { exchangeLocked, setExchangeLocked } from "./storage.js";
 
 const STATUS_CLASS = "hbr-status";
+const LOCK_CLASS = "hbr-lock";
+const LOCKED_CLASS = "hbr-exchange-locked";
 const BADGE_CLASS = "hbr-badge";
 const HIT_CLASS = "hbr-hit";
 const CARD_CLASS = "hbr-card";
@@ -89,6 +92,32 @@ function addInfoCards(root, ctx) {
   }
 }
 
+function addExchangeLock(root) {
+  const button = root.querySelector(".exchange-btn");
+  if (!button) return;
+  root.classList.toggle(LOCKED_CLASS, exchangeLocked());
+  const label = document.createElement("label");
+  label.className = LOCK_CLASS;
+  label.title = "Blocks the Exchange all treats button so it can't be pressed by accident";
+  const box = document.createElement("input");
+  box.type = "checkbox";
+  box.checked = exchangeLocked();
+  box.addEventListener("change", () => {
+    setExchangeLocked(box.checked);
+    root.classList.toggle(LOCKED_CLASS, box.checked);
+  });
+  label.addEventListener("click", (e) => e.stopPropagation());
+  label.append(box, "Lock exchange");
+  button.after(label);
+}
+
+export function blockExchange(e) {
+  const button = e.target.closest?.(".exchange-btn");
+  if (!button?.closest(`.${LOCKED_CLASS}`)) return;
+  e.preventDefault();
+  e.stopImmediatePropagation();
+}
+
 export function hideCards() {
   document.querySelectorAll(`.${CARD_CLASS}`).forEach((c) => (c.hidden = true));
 }
@@ -115,6 +144,7 @@ export function paint(root, { steps: route, never }, state, costs) {
   status.className = STATUS_CLASS;
   root.querySelector(".treats-bar")?.after(status);
   addInfoCards(root, { route, never, state, costs });
+  addExchangeLock(root);
 
   if (!route.length) {
     setStatus(status, "Route: no steps in ROUTE.md yet.");
@@ -150,11 +180,13 @@ export function paint(root, { steps: route, never }, state, costs) {
 }
 
 export function clear(root) {
-  root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}`).forEach((n) => n.remove());
+  root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}, .${LOCK_CLASS}`).forEach((n) => n.remove());
   root.querySelectorAll(".hbr-route").forEach((n) => n.classList.remove(...MARK_CLASSES));
+  root.classList.remove(LOCKED_CLASS);
   root.style.removeProperty(SHIFT_VAR);
 }
 
 export function isPainted(root) {
-  return !!root.querySelector(`.${STATUS_CLASS}`);
+  if (!root.querySelector(`.${STATUS_CLASS}`)) return false;
+  return !root.querySelector(".exchange-btn") || !!root.querySelector(`.${LOCK_CLASS}`);
 }

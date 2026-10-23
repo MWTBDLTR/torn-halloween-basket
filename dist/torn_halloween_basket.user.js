@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn Halloween Basket Route
 // @namespace    church-tools
-// @version      1.0.9
+// @version      1.1.0
 // @author       MrChurch [3654415]
 // @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel.
 // @license      CC-BY-NC-SA-4.0
@@ -17,7 +17,7 @@
   var steps = [{ id: 1, name: "I See Dead People", tier: "I", note: "" }, { id: 2, name: "Here's Johnny!", tier: "I", note: "" }, { id: 3, name: "Doubler", tier: "I", note: "" }, { id: 4, name: "Tripler", tier: "I", note: "" }, { id: 5, name: "Quadrupler", tier: "I", note: "" }, { id: 13, name: "Cat in Hell", tier: "III", note: "" }, { id: 6, name: "Quintupler", tier: "I", note: "" }, { id: 23, name: "Shadow of Doubt", tier: "IV", note: "+1,100 treats, which count toward basket progress. Getting here from step 7 takes roughly an entire event's worth of attacking" }, { id: 19, name: "Multipack", tier: "IV", note: "" }, { id: 20, name: "Deal with the Devil", tier: "IV", note: "" }, { id: 18, name: "Dark Power", tier: "III", note: "" }, { id: 15, name: "Freebie", tier: "III", note: "" }, { id: 9, name: "Bloody Mary", tier: "II", note: "" }, { id: 10, name: "Nice Chianti", tier: "II", note: "" }, { id: 11, name: "Nightcrawler", tier: "II", note: "" }, { id: 12, name: "It's Alive", tier: "II", note: "" }, { id: 17, name: "Cashback", tier: "III", note: "" }, { id: 7, name: "Candyman", tier: "II", note: "" }, { id: 8, name: "Sweet Release", tier: "II", note: "" }, { id: 16, name: "Cold Sweat", tier: "III", note: "+1 nerve per treat; assumes Crimes 2.0 is unlocked" }];
   var never = [14, 21, 22, 24];
 
-  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .updates-grid-slide {\n  left: var(--hbr-wheel-shift, 0px);\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n\n.use-halloween-basket .hbr-guide {\n  color: #f39c12;\n  text-decoration: underline;\n}\n\n.use-halloween-basket .hbr-hit {\n  position: absolute;\n  z-index: 4;\n  border-radius: 50%;\n  cursor: help;\n  pointer-events: auto;\n}\n\n.use-halloween-basket .hbr-card {\n  position: absolute;\n  z-index: 10;\n  box-sizing: border-box;\n  width: 260px;\n  max-width: 100%;\n  padding: 8px 10px;\n  border: 1px solid #f39c12;\n  border-radius: 4px;\n  background: #1b1b1b;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);\n  color: #ddd;\n  font: 12px/1.4 Arial, sans-serif;\n  text-align: left;\n  pointer-events: none;\n}\n\n.use-halloween-basket .hbr-card[hidden] {\n  display: none;\n}\n\n.use-halloween-basket .hbr-card-title {\n  color: #f39c12;\n  font-weight: bold;\n}\n\n.use-halloween-basket .hbr-card-desc {\n  margin-top: 4px;\n}\n\n.use-halloween-basket .hbr-card-flavor {\n  margin-top: 2px;\n  color: #999;\n  font-style: italic;\n}\n\n.use-halloween-basket .hbr-card-foot {\n  margin-top: 6px;\n  color: #bbb;\n}\n';
+  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .updates-grid-slide {\n  left: var(--hbr-wheel-shift, 0px);\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n\n.use-halloween-basket .hbr-guide {\n  color: #f39c12;\n  text-decoration: underline;\n}\n\n.use-halloween-basket .hbr-hit {\n  position: absolute;\n  z-index: 4;\n  border-radius: 50%;\n  cursor: help;\n  pointer-events: auto;\n}\n\n.use-halloween-basket .hbr-card {\n  position: absolute;\n  z-index: 10;\n  box-sizing: border-box;\n  width: 260px;\n  max-width: 100%;\n  padding: 8px 10px;\n  border: 1px solid #f39c12;\n  border-radius: 4px;\n  background: #1b1b1b;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);\n  color: #ddd;\n  font: 12px/1.4 Arial, sans-serif;\n  text-align: left;\n  pointer-events: none;\n}\n\n.use-halloween-basket .hbr-card[hidden] {\n  display: none;\n}\n\n.use-halloween-basket .hbr-card-title {\n  color: #f39c12;\n  font-weight: bold;\n}\n\n.use-halloween-basket .hbr-card-desc {\n  margin-top: 4px;\n}\n\n.use-halloween-basket .hbr-card-flavor {\n  margin-top: 2px;\n  color: #999;\n  font-style: italic;\n}\n\n.use-halloween-basket .hbr-card-foot {\n  margin-top: 6px;\n  color: #bbb;\n}\n\n.use-halloween-basket.hbr-exchange-locked .exchange-btn {\n  opacity: 0.4;\n  pointer-events: none;\n}\n\n.use-halloween-basket .exchange-action {\n  position: relative;\n}\n\n.use-halloween-basket .hbr-lock {\n  position: absolute;\n  right: 0;\n  bottom: 0;\n  display: flex;\n  align-items: center;\n  gap: 4px;\n  height: 15px;\n  color: #ddd;\n  font: 11px/15px Arial, sans-serif;\n  cursor: pointer;\n  user-select: none;\n}\n\n.use-halloween-basket .hbr-lock input {\n  width: 11px;\n  height: 11px;\n  margin: 0;\n}\n';
 
   var num = (s) => Number(String(s).replace(/[^\d]/g, "")) || 0;
   var BASKET_SELECTOR = ".use-halloween-basket";
@@ -119,7 +119,36 @@
   }
   var tierOf = (label) => TIERS.find((t) => t.label === label) ?? null;
 
+  var PREFIX = "hbr_";
+  function getValue(key, fallback) {
+    try {
+      if (typeof GM_getValue === "function") return GM_getValue(PREFIX + key, fallback);
+      const raw = localStorage.getItem(PREFIX + key);
+      return raw == null ? fallback : JSON.parse(raw);
+    } catch {
+      return fallback;
+    }
+  }
+  function setValue(key, value) {
+    try {
+      if (typeof GM_setValue === "function") GM_setValue(PREFIX + key, value);
+      else localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    } catch {
+    }
+  }
+  function rememberCost(id, cost) {
+    const costs = getValue("costs", {});
+    if (costs[id] === cost) return;
+    costs[id] = cost;
+    setValue("costs", costs);
+  }
+  var knownCosts = () => getValue("costs", {});
+  var exchangeLocked = () => getValue("exchange_locked", true);
+  var setExchangeLocked = (locked) => setValue("exchange_locked", locked);
+
   var STATUS_CLASS = "hbr-status";
+  var LOCK_CLASS = "hbr-lock";
+  var LOCKED_CLASS = "hbr-exchange-locked";
   var BADGE_CLASS = "hbr-badge";
   var HIT_CLASS = "hbr-hit";
   var CARD_CLASS = "hbr-card";
@@ -198,6 +227,30 @@
       up.el.parentElement.append(hit);
     }
   }
+  function addExchangeLock(root) {
+    const button = root.querySelector(".exchange-btn");
+    if (!button) return;
+    root.classList.toggle(LOCKED_CLASS, exchangeLocked());
+    const label = document.createElement("label");
+    label.className = LOCK_CLASS;
+    label.title = "Blocks the Exchange all treats button so it can't be pressed by accident";
+    const box = document.createElement("input");
+    box.type = "checkbox";
+    box.checked = exchangeLocked();
+    box.addEventListener("change", () => {
+      setExchangeLocked(box.checked);
+      root.classList.toggle(LOCKED_CLASS, box.checked);
+    });
+    label.addEventListener("click", (e) => e.stopPropagation());
+    label.append(box, "Lock exchange");
+    button.after(label);
+  }
+  function blockExchange(e) {
+    const button = e.target.closest?.(".exchange-btn");
+    if (!button?.closest(`.${LOCKED_CLASS}`)) return;
+    e.preventDefault();
+    e.stopImmediatePropagation();
+  }
   function hideCards() {
     document.querySelectorAll(`.${CARD_CLASS}`).forEach((c) => c.hidden = true);
   }
@@ -220,6 +273,7 @@
     status.className = STATUS_CLASS;
     root.querySelector(".treats-bar")?.after(status);
     addInfoCards(root, { route, never: never2, state, costs });
+    addExchangeLock(root);
     if (!route.length) {
       setStatus(status, "Route: no steps in ROUTE.md yet.");
       return;
@@ -250,38 +304,15 @@
     status.dataset.reason = next.reason;
   }
   function clear(root) {
-    root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}`).forEach((n) => n.remove());
+    root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}, .${LOCK_CLASS}`).forEach((n) => n.remove());
     root.querySelectorAll(".hbr-route").forEach((n) => n.classList.remove(...MARK_CLASSES));
+    root.classList.remove(LOCKED_CLASS);
     root.style.removeProperty(SHIFT_VAR);
   }
   function isPainted(root) {
-    return !!root.querySelector(`.${STATUS_CLASS}`);
+    if (!root.querySelector(`.${STATUS_CLASS}`)) return false;
+    return !root.querySelector(".exchange-btn") || !!root.querySelector(`.${LOCK_CLASS}`);
   }
-
-  var PREFIX = "hbr_";
-  function getValue(key, fallback) {
-    try {
-      if (typeof GM_getValue === "function") return GM_getValue(PREFIX + key, fallback);
-      const raw = localStorage.getItem(PREFIX + key);
-      return raw == null ? fallback : JSON.parse(raw);
-    } catch {
-      return fallback;
-    }
-  }
-  function setValue(key, value) {
-    try {
-      if (typeof GM_setValue === "function") GM_setValue(PREFIX + key, value);
-      else localStorage.setItem(PREFIX + key, JSON.stringify(value));
-    } catch {
-    }
-  }
-  function rememberCost(id, cost) {
-    const costs = getValue("costs", {});
-    if (costs[id] === cost) return;
-    costs[id] = cost;
-    setValue("costs", costs);
-  }
-  var knownCosts = () => getValue("costs", {});
 
   function addStyle(text) {
     if (typeof GM_addStyle === "function") return GM_addStyle(text);
@@ -321,6 +352,7 @@
     });
   }
   addStyle(styles_default);
+  document.addEventListener("click", blockExchange, true);
   document.addEventListener("click", hideCards);
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
   schedule();
