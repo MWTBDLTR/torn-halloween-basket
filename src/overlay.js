@@ -142,7 +142,9 @@ export function paint(root, { steps: route, never }, state, costs) {
 
   const status = document.createElement("div");
   status.className = STATUS_CLASS;
-  root.querySelector(".treats-bar")?.after(status);
+  const bar = root.querySelector(".treats-bar");
+  if (bar) bar.after(status);
+  else root.prepend(status);
   addInfoCards(root, { route, never, state, costs });
   addExchangeLock(root);
 

@@ -5,13 +5,16 @@ import { dirname, join } from "node:path";
 import { findUpgrade } from "./src/upgrades.js";
 
 const root = dirname(fileURLToPath(import.meta.url));
-const pkg = JSON.parse(readFileSync(join(root, "package.json"), "utf8"));
+const pkgFile = join(root, "package.json");
+const metaFile = join(root, "src", "meta.txt");
 const routeFile = join(root, "ROUTE.md");
+const watched = [routeFile, metaFile, pkgFile];
 const outfile = join(root, "dist", "torn_halloween_basket.user.js");
 
-const header = readFileSync(join(root, "src", "meta.txt"), "utf8")
-  .replaceAll("{{version}}", pkg.version)
-  .trimEnd();
+function header() {
+  const pkg = JSON.parse(readFileSync(pkgFile, "utf8"));
+  return readFileSync(metaFile, "utf8").replaceAll("{{version}}", pkg.version).trimEnd();
+}
 
 function parseRoute(md) {
   const steps = [];
@@ -49,9 +52,9 @@ const routePlugin = {
     build.onLoad({ filter: /.*/, namespace: "route" }, () => {
       try {
         const steps = parseRoute(readFileSync(routeFile, "utf8"));
-        return { contents: JSON.stringify(steps), loader: "json", watchFiles: [routeFile] };
+        return { contents: JSON.stringify(steps), loader: "json", watchFiles: watched };
       } catch (e) {
-        return { errors: [{ text: e.message }], watchFiles: [routeFile] };
+        return { errors: [{ text: e.message }], watchFiles: watched };
       }
     });
   },
@@ -66,7 +69,7 @@ const cleanPlugin = {
         .replace(/^[ \t]*\/\/ .*\n/gm, "")
         .replaceAll("/* @__PURE__ */ ", "");
       mkdirSync(dirname(outfile), { recursive: true });
-      writeFileSync(outfile, `${header}\n\n${code}`);
+      writeFileSync(outfile, `${header()}\n\n${code}`);
       console.log(`  ${outfile.slice(root.length + 1)}  ${(code.length / 1024).toFixed(1)}kb`);
     });
   },

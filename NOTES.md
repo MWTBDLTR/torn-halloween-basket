@@ -7,9 +7,13 @@ would have been a comment lives here, per file. Keep it in step with the code.
 
 Bundles `src/` into a single Tampermonkey userscript.
 
-- `npm run build` builds once; `npm run watch` rebuilds on any change to `src/` or `ROUTE.md`.
+- `npm run build` builds once; `npm run watch` rebuilds on any change to `src/`, `ROUTE.md`
+  or `package.json`.
 - `package.json` `version` is the single source of truth for `@version`: `src/meta.txt` is the
-  header template and `{{version}}` is substituted into it.
+  header template and `{{version}}` is substituted into it. `header()` reads both files on
+  every build, not once at startup, or watch mode would keep writing the header it started
+  with. Neither file is imported, so esbuild's watcher only sees them because the `route`
+  plugin lists them in `watchFiles` next to `ROUTE.md`.
 - `parseRoute` turns `ROUTE.md` into `{ steps: [{ id, name, tier, note }], never: [id] }`.
   Numbered items are the route; bulleted items under a heading containing "Never" are the
   never-buy list. It runs at build time rather than at runtime so a typo in an upgrade name,
@@ -139,6 +143,10 @@ the document, cancels any click that still reaches the button (keyboard Enter or
 Torn's own handlers see it. Torn sets and clears the button's `disabled` attribute itself, so
 the lock never touches it and Torn's state is left as it was. The checkbox's clicks stop at
 its label. The choice is stored as `hbr_exchange_locked` and defaults to locked.
+
+The status line goes after `.treats-bar`, or at the top of the panel if Torn ever drops the
+bar. It must always be inserted: `isPainted` looks for it, and a status line that never lands
+makes every paint's own mutations trigger the next paint, once per frame, forever.
 
 `isPainted` is true while what `paint` added is still in the DOM. Torn re-renders the panel
 wholesale after an upgrade, which drops our nodes, and that is how the entry point notices.
