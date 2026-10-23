@@ -70,9 +70,9 @@ prefixes. A write that fails (storage unavailable) is ignored: costs are just no
 
 Torn only states a cost in the confirmation box after an upgrade is clicked, so `rememberCost`
 keeps each one seen, as `hbr_costs = { [upgradeId]: treats }`, and `knownCosts` reads them
-back. The status line and `nextStep` use only these seen costs. The info card uses them ahead
-of the catalog's cost from `upgrades.js`, so a price Torn changes is picked up on the first
-click without a new release.
+back. The entry point lays them over `CATALOG_COSTS` from `upgrades.js`, so the status line,
+`nextStep` and the info card all see the guide's cost until Torn states one, and a price Torn
+changes is picked up on the first click without a new release.
 
 ## src/route.js
 
@@ -80,8 +80,8 @@ click without a new release.
 
 - `route` is the ordered `steps` from `ROUTE.md`, each `{ id, name, tier, note }`.
 - `state` is what `readBasket` returned.
-- `costs` maps upgrade id -> treats, only for upgrades seen in the confirmation box so far; it
-  may be empty.
+- `costs` maps upgrade id -> treats: the catalog's costs, overridden by any seen in the
+  confirmation box.
 - It returns `{ index, step, reason }`, or `null` once every step is unlocked. `reason` is
   `ready` (buy it now), `short` (its known cost is more than the treats held) or `locked` (its
   tier is still locked).
@@ -89,7 +89,8 @@ click without a new release.
 A step bought out of order simply counts as done: the recommendation is the first step not yet
 bought. A locked or unaffordable next step is reported rather than skipped, because the route's
 order is the point — buying past it spends treats it is saving for (step 7 -> 8 is a whole
-event of saving). An unknown cost is assumed affordable.
+event of saving). A step with no cost at all (not in the catalog, never seen) is assumed
+affordable.
 
 `progress` counts how many route steps are unlocked.
 
@@ -141,7 +142,7 @@ no-op, so `watchSize` can run on every paint.
 A document click listener calls `hideCards`, so tapping anywhere else closes an info card.
 
 `signature` covers everything that changes what would be drawn (treats, locked tiers, each
-upgrade's unlocked/locked state, known costs). Our own nodes are not part of it, so painting
+upgrade's unlocked/locked state, costs). Our own nodes are not part of it, so painting
 never re-triggers a paint; a repaint happens only when the signature changed or our nodes are
 gone.
 

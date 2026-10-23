@@ -1,6 +1,6 @@
 {
   "name": "torn-halloween-basket",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "private": true,
   "type": "module",
   "description": "Highlights the recommended Halloween Basket upgrade route on Torn's item page",

@@ -44,6 +44,8 @@ export const UPGRADES = CATALOG.flatMap((rows, t) =>
   rows.map(([name, cost, desc, flavor], i) => ({ id: t * 6 + i + 1, name, tier: TIERS[t].label, cost, desc, flavor })),
 );
 
+export const CATALOG_COSTS = Object.fromEntries(UPGRADES.map((u) => [u.id, u.cost]));
+
 const norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
 const byName = new Map(UPGRADES.map((u) => [norm(u.name), u]));
 

@@ -43,7 +43,7 @@ function line(cls, text) {
 
 function fillCard(card, up, { route, never, state, costs }) {
   const info = findUpgrade(`#${up.id}`);
-  const cost = costs[up.id] ?? info?.cost;
+  const cost = costs[up.id];
   const step = route.findIndex((s) => s.id === up.id);
   const unlocksAt = tierOf(up.tier)?.unlocksAt;
   const plan = never.includes(up.id) ? "Never buy" : step >= 0 ? `Route step ${step + 1}` : null;
@@ -141,7 +141,7 @@ export function paint(root, { steps: route, never }, state, costs) {
   const parts = [
     `Next (${next.index + 1}/${total}): ${next.step.name}`,
     `tier ${next.step.tier}`,
-    cost != null ? `${cost} treats` : null,
+    cost != null ? `${fmt(cost)} treats` : null,
     REASON_TEXT[next.reason] || null,
     next.step.note || null,
   ].filter(Boolean);

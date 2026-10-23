@@ -3,6 +3,7 @@ import css from "./styles.css";
 import { BASKET_SELECTOR, readBasket } from "./basket.js";
 import { paint, isPainted, centreWheel, hideCards } from "./overlay.js";
 import { rememberCost, knownCosts } from "./storage.js";
+import { CATALOG_COSTS } from "./upgrades.js";
 
 function addStyle(text) {
   if (typeof GM_addStyle === "function") return GM_addStyle(text);
@@ -29,7 +30,7 @@ function update() {
     const state = readBasket(root);
     if (!state.upgrades.size) continue;
     if (state.pending) rememberCost(state.pending.id, state.pending.cost);
-    const costs = knownCosts();
+    const costs = { ...CATALOG_COSTS, ...knownCosts() };
     const sig = signature(state, costs);
     if (lastSig.get(root) === sig && isPainted(root)) continue;
     lastSig.set(root, sig);

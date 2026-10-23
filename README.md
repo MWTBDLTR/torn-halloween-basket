@@ -9,7 +9,7 @@ When you open the basket on the Items page, it:
 - rings the next upgrade to buy,
 - marks the upgrades not worth buying with a red ✕,
 - shows a locked upgrade's description, cost and unlock level when you hover over or tap it,
-- shows a line under the treats bar naming the next step, its tier, its cost once seen, and
+- shows a line under the treats bar naming the next step, its tier, its cost, and
   whether its tier is still locked or you are short on treats, with a link to the Halloween
   guide,
 - keeps the wheel centred when the window is narrow.

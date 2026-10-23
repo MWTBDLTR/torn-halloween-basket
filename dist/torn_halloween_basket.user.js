@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn Halloween Basket Route
 // @namespace    church-tools
-// @version      1.0.7
+// @version      1.0.8
 // @author       MrChurch [3654415]
 // @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel. Read-only: never clicks or requests anything.
 // @match        https://www.torn.com/item.php*
@@ -108,6 +108,7 @@
   var UPGRADES = CATALOG.flatMap(
     (rows, t) => rows.map(([name, cost, desc, flavor], i) => ({ id: t * 6 + i + 1, name, tier: TIERS[t].label, cost, desc, flavor }))
   );
+  var CATALOG_COSTS = Object.fromEntries(UPGRADES.map((u) => [u.id, u.cost]));
   var norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
   var byName = new Map(UPGRADES.map((u) => [norm(u.name), u]));
   function findUpgrade(ref) {
@@ -153,7 +154,7 @@
   }
   function fillCard(card, up, { route, never: never2, state, costs }) {
     const info = findUpgrade(`#${up.id}`);
-    const cost = costs[up.id] ?? info?.cost;
+    const cost = costs[up.id];
     const step = route.findIndex((s) => s.id === up.id);
     const unlocksAt = tierOf(up.tier)?.unlocksAt;
     const plan = never2.includes(up.id) ? "Never buy" : step >= 0 ? `Route step ${step + 1}` : null;
@@ -240,7 +241,7 @@
     const parts = [
       `Next (${next.index + 1}/${total}): ${next.step.name}`,
       `tier ${next.step.tier}`,
-      cost != null ? `${cost} treats` : null,
+      cost != null ? `${fmt(cost)} treats` : null,
       REASON_TEXT[next.reason] || null,
       next.step.note || null
     ].filter(Boolean);
@@ -301,7 +302,7 @@
       const state = readBasket(root);
       if (!state.upgrades.size) continue;
       if (state.pending) rememberCost(state.pending.id, state.pending.cost);
-      const costs = knownCosts();
+      const costs = { ...CATALOG_COSTS, ...knownCosts() };
       const sig = signature(state, costs);
       if (lastSig.get(root) === sig && isPainted(root)) continue;
       lastSig.set(root, sig);
