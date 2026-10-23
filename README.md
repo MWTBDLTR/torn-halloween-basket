@@ -8,6 +8,7 @@ When you open the basket on the Items page, it:
 - numbers each upgrade with its place in the route,
 - rings the next upgrade to buy,
 - marks the upgrades not worth buying with a red ✕,
+- shows a locked upgrade's description, cost and unlock level when you hover over or tap it,
 - shows a line under the treats bar naming the next step, its tier, its cost once seen, and
   whether its tier is still locked or you are short on treats.
 
@@ -26,7 +27,10 @@ and click Install. Updates are offered automatically when the version changes.
 
 The route is in [ROUTE.md](ROUTE.md), taken from the Oct 2023 route image
 ([route-2023.webp](route-2023.webp)). The route order and its notes are by
-[Andyman [471591]](https://www.torn.com/profiles.php?XID=471591).
+[Andyman [471591]](https://www.torn.com/profiles.php?XID=471591). Upgrade descriptions, costs
+and tier unlock levels are from
+[IceBlueFire [776]](https://www.torn.com/profiles.php?XID=776)'s
+[Halloween Trick or Treat Guide](https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0).
 
 ## Building
 

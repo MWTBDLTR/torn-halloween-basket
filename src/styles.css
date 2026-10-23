@@ -73,3 +73,52 @@
   color: #f39c12;
   text-decoration: underline;
 }
+
+.use-halloween-basket .hbr-hit {
+  position: absolute;
+  z-index: 4;
+  border-radius: 50%;
+  cursor: help;
+  pointer-events: auto;
+}
+
+.use-halloween-basket .hbr-card {
+  position: absolute;
+  z-index: 10;
+  box-sizing: border-box;
+  width: 260px;
+  max-width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #f39c12;
+  border-radius: 4px;
+  background: #1b1b1b;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  color: #ddd;
+  font: 12px/1.4 Arial, sans-serif;
+  text-align: left;
+  pointer-events: none;
+}
+
+.use-halloween-basket .hbr-card[hidden] {
+  display: none;
+}
+
+.use-halloween-basket .hbr-card-title {
+  color: #f39c12;
+  font-weight: bold;
+}
+
+.use-halloween-basket .hbr-card-desc {
+  margin-top: 4px;
+}
+
+.use-halloween-basket .hbr-card-flavor {
+  margin-top: 2px;
+  color: #999;
+  font-style: italic;
+}
+
+.use-halloween-basket .hbr-card-foot {
+  margin-top: 6px;
+  color: #bbb;
+}

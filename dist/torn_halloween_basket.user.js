@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         Torn Halloween Basket Route
 // @namespace    church-tools
-// @version      1.0.5
+// @version      1.0.6
 // @author       MrChurch [3654415]
 // @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel. Read-only: never clicks or requests anything.
 // @match        https://www.torn.com/item.php*
@@ -16,7 +16,7 @@
   var steps = [{ id: 1, name: "I See Dead People", tier: "I", note: "" }, { id: 2, name: "Here's Johnny!", tier: "I", note: "" }, { id: 3, name: "Doubler", tier: "I", note: "" }, { id: 4, name: "Tripler", tier: "I", note: "" }, { id: 5, name: "Quadrupler", tier: "I", note: "" }, { id: 13, name: "Cat in Hell", tier: "III", note: "" }, { id: 6, name: "Quintupler", tier: "I", note: "" }, { id: 23, name: "Shadow of Doubt", tier: "IV", note: "+1,100 treats, which count toward basket progress. Getting here from step 7 takes roughly an entire event's worth of attacking" }, { id: 19, name: "Multipack", tier: "IV", note: "" }, { id: 20, name: "Deal with the Devil", tier: "IV", note: "" }, { id: 18, name: "Dark Power", tier: "III", note: "" }, { id: 15, name: "Freebie", tier: "III", note: "" }, { id: 9, name: "Bloody Mary", tier: "II", note: "" }, { id: 10, name: "Nice Chianti", tier: "II", note: "" }, { id: 11, name: "Nightcrawler", tier: "II", note: "" }, { id: 12, name: "It's Alive", tier: "II", note: "" }, { id: 17, name: "Cashback", tier: "III", note: "" }, { id: 7, name: "Candyman", tier: "II", note: "" }, { id: 8, name: "Sweet Release", tier: "II", note: "" }, { id: 16, name: "Cold Sweat", tier: "III", note: "+1 nerve per treat; assumes Crimes 2.0 is unlocked" }];
   var never = [14, 21, 22, 24];
 
-  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .updates-grid-slide {\n  left: var(--hbr-wheel-shift, 0px);\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n\n.use-halloween-basket .hbr-guide {\n  color: #f39c12;\n  text-decoration: underline;\n}\n';
+  var styles_default = '.use-halloween-basket .basket-update.hbr-route {\n  position: relative;\n}\n\n.use-halloween-basket .updates-grid-slide {\n  left: var(--hbr-wheel-shift, 0px);\n}\n\n.use-halloween-basket .hbr-badge {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n  z-index: 3;\n  box-sizing: border-box;\n  min-width: 20px;\n  height: 20px;\n  padding: 0 5px;\n  border-radius: 10px;\n  transition: opacity 0.15s;\n  background: #1b1b1b;\n  border: 1px solid #f39c12;\n  color: #f39c12;\n  font: bold 11px/18px Arial, sans-serif;\n  text-align: center;\n  pointer-events: none;\n}\n\n.use-halloween-basket .basket-update.selected .hbr-badge,\n.use-halloween-basket .basket-update:hover .hbr-badge {\n  opacity: 0;\n}\n\n.use-halloween-basket .hbr-done .hbr-badge {\n  border-color: #555;\n  color: #777;\n}\n\n.use-halloween-basket .hbr-never .hbr-badge {\n  border-color: #c0392b;\n  color: #e74c3c;\n}\n\n.use-halloween-basket .basket-update.hbr-never {\n  opacity: 0.55;\n}\n\n.use-halloween-basket .basket-update.hbr-next {\n  border-radius: 50%;\n  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);\n}\n\n.use-halloween-basket .hbr-next .hbr-badge {\n  background: #f39c12;\n  color: #111;\n}\n\n.use-halloween-basket .hbr-status {\n  margin: 6px 20px 41px;\n  padding: 6px 10px;\n  border-left: 3px solid #f39c12;\n  background: rgba(0, 0, 0, 0.35);\n  color: #ddd;\n  font: 13px/1.4 Arial, sans-serif;\n}\n\n.use-halloween-basket .hbr-status[data-reason="locked"],\n.use-halloween-basket .hbr-status[data-reason="short"] {\n  border-left-color: #888;\n}\n\n.use-halloween-basket .hbr-guide {\n  color: #f39c12;\n  text-decoration: underline;\n}\n\n.use-halloween-basket .hbr-hit {\n  position: absolute;\n  z-index: 4;\n  border-radius: 50%;\n  cursor: help;\n  pointer-events: auto;\n}\n\n.use-halloween-basket .hbr-card {\n  position: absolute;\n  z-index: 10;\n  box-sizing: border-box;\n  width: 260px;\n  max-width: 100%;\n  padding: 8px 10px;\n  border: 1px solid #f39c12;\n  border-radius: 4px;\n  background: #1b1b1b;\n  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);\n  color: #ddd;\n  font: 12px/1.4 Arial, sans-serif;\n  text-align: left;\n  pointer-events: none;\n}\n\n.use-halloween-basket .hbr-card[hidden] {\n  display: none;\n}\n\n.use-halloween-basket .hbr-card-title {\n  color: #f39c12;\n  font-weight: bold;\n}\n\n.use-halloween-basket .hbr-card-desc {\n  margin-top: 4px;\n}\n\n.use-halloween-basket .hbr-card-flavor {\n  margin-top: 2px;\n  color: #999;\n  font-style: italic;\n}\n\n.use-halloween-basket .hbr-card-foot {\n  margin-top: 6px;\n  color: #bbb;\n}\n';
 
   var num = (s) => Number(String(s).replace(/[^\d]/g, "")) || 0;
   var BASKET_SELECTOR = ".use-halloween-basket";
@@ -65,8 +65,62 @@
     return { done, total: route.length };
   }
 
+  var TIERS = [
+    { label: "I", cls: "basic", unlocksAt: null },
+    { label: "II", cls: "frightful", unlocksAt: "Frightful" },
+    { label: "III", cls: "hhocking", unlocksAt: "Shocking" },
+    { label: "IV", cls: "horrifying", unlocksAt: "Horrifying" }
+  ];
+  var CATALOG = [
+    [
+      ["I See Dead People", 3, "This upgrade gives +10% chance of receiving a treat when wearing any scary clothing.", "I.e. Kabuki Mask, Medieval Helmet, Witch's Hat, Straitjacket & scary masks."],
+      ["Here's Johnny!", 5, "This upgrade gives +10% chance of receiving a treat when ending a victim with a scary weapon.", "I.e. Axe, Chainsaw, Blood Spattered Sickle, Devil's Pitchfork, Petrified Humerus."],
+      ["Doubler", 25, "This upgrade has a 20% chance of doubling the treats received after an attack.", "This 2x bonus can stack with Tripler, Quadrupler & Quintupler."],
+      ["Tripler", 50, "This upgrade has a 10% chance of tripling the treats received after an attack.", "This 3x bonus can stack with Doubler, Quadrupler & Quintupler."],
+      ["Quadrupler", 75, "This upgrade has a 5% chance of quadrupling the treats received after an attack.", "This 4x bonus can stack with Doubler, Tripler & Quintupler."],
+      ["Quintupler", 100, "This upgrade has a 1% chance of quintupling the treats received after an attack.", "This 5x bonus can stack with Doubler, Tripler & Quadrupler."]
+    ],
+    [
+      ["Candyman", 5, "This upgrade unlocks medium-tier candy.", "Bag of Bloody Eyeballs is added to the candy reward pool."],
+      ["Sweet Release", 10, "This upgrade unlocks high-tier candy.", "Bag of Chocolate Truffles is added to the candy reward pool."],
+      ["Bloody Mary", 15, "This upgrade unlocks medium-tier alcohol.", "Bottle of Wicked Witch is added to the alcohol reward pool."],
+      ["Nice Chianti", 30, "This upgrade unlocks high-tier alcohol.", "Bottle of Stinky Swamp Punch is added to the alcohol reward pool."],
+      ["Nightcrawler", 45, "This upgrade unlocks medium-tier energy drink.", "Can of Munster is added to the energy drink reward pool."],
+      ["It's Alive", 90, "This upgrade unlocks high-tier energy drink.", "Can of Red Cow is added to the energy drink reward pool."]
+    ],
+    [
+      ["Cat in Hell", 13, "This upgrade gives a 1 in 500,000 chance with every attack of instantly receiving 1,000 treats.", "Or the equivalent of being struck by lightning..."],
+      ["Save Your Tears", 95, "When exchanging your treats you'll also receive +500 happiness for every treat exchanged.", "Up to 99,999 happiness."],
+      ["Freebie", 120, "Receive an additional bonus treat for every 10 upon exchange.", "Exchange ten and get one free."],
+      ["Cold Sweat", 170, "When exchanging your treats you'll also receive +1 nerve for every treat exchanged.", "Up to 32,767 nerve."],
+      ["Cashback", 230, "After exchanging your treats you'll immediately receive 10% back with this upgrade.", "We want to reward your loyalty."],
+      ["Dark Power", 285, "When exchanging your treats you'll also receive +5 energy for every treat exchanged.", "Up to 1,000 energy."]
+    ],
+    [
+      ["Multipack", 180, "This upgrade gives a 3% chance of consumables being upgraded to Multipacks upon exchange.", "I.e. A rewarded bottle of beer may become a Six Pack of Alcohol."],
+      ["Deal with the Devil", 320, "This upgrade gives a 3% chance of consumables being upgraded to Boosters and Special items upon exchange.", "Treats may be converted into Erotic DVDs, Feathery Hotel Coupons, Business Class Tickets and Casino Passes."],
+      ["Mortal Coil", 500, "Receive 1 treat for free every hour while the Halloween Basket event is active.", "A trickle of treats for doing absolutely nothing."],
+      ["Inflation", 777, "The treats in your basket increase by 0.1% per hour while the Halloween Basket event is active.", "This covers the rate of Freddo price increases and confectionary shrinkage."],
+      ["Shadow of Doubt", 1e3, "This upgrade immediately provides exactly 1,100 treats.", "Probably...?"],
+      ["Summon Him", 9999, "Begins the end times.", "It was nice knowing you."]
+    ]
+  ];
+  var UPGRADES = CATALOG.flatMap(
+    (rows, t) => rows.map(([name, cost, desc, flavor], i) => ({ id: t * 6 + i + 1, name, tier: TIERS[t].label, cost, desc, flavor }))
+  );
+  var norm = (s) => s.toLowerCase().replace(/[^a-z0-9]/g, "");
+  var byName = new Map(UPGRADES.map((u) => [norm(u.name), u]));
+  function findUpgrade(ref) {
+    const m = /^#?(\d+)$/.exec(ref.trim());
+    if (m) return UPGRADES[Number(m[1]) - 1] ?? null;
+    return byName.get(norm(ref)) ?? null;
+  }
+  var tierOf = (label) => TIERS.find((t) => t.label === label) ?? null;
+
   var STATUS_CLASS = "hbr-status";
   var BADGE_CLASS = "hbr-badge";
+  var HIT_CLASS = "hbr-hit";
+  var CARD_CLASS = "hbr-card";
   var MARK_CLASSES = ["hbr-route", "hbr-done", "hbr-next", "hbr-never"];
   var SHIFT_VAR = "--hbr-wheel-shift";
   var GUIDE_URL = "https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0";
@@ -90,6 +144,61 @@
     guide.textContent = "Halloween guide";
     status.replaceChildren(`${text} · `, guide);
   }
+  var fmt = (n) => n.toLocaleString("en-US");
+  function line(cls, text) {
+    const el = document.createElement("div");
+    el.className = cls;
+    el.textContent = text;
+    return el;
+  }
+  function fillCard(card, up, { route, never: never2, state, costs }) {
+    const info = findUpgrade(`#${up.id}`);
+    const cost = costs[up.id] ?? info?.cost;
+    const step = route.findIndex((s) => s.id === up.id);
+    const unlocksAt = tierOf(up.tier)?.unlocksAt;
+    const plan = never2.includes(up.id) ? "Never buy" : step >= 0 ? `Route step ${step + 1}` : null;
+    const wallet = cost == null ? null : cost > state.treats ? `${fmt(cost - state.treats)} treats short` : "affordable";
+    card.replaceChildren(
+      line("hbr-card-title", [up.name, `tier ${up.tier}`, cost != null ? `${fmt(cost)} treats` : null].filter(Boolean).join(" · ")),
+      ...info ? [line("hbr-card-desc", info.desc), line("hbr-card-flavor", info.flavor)] : [],
+      line("hbr-card-foot", [unlocksAt ? `Unlocks at a ${unlocksAt} basket` : null, plan, wallet].filter(Boolean).join(" · "))
+    );
+  }
+  function showCard(root, card, hit) {
+    card.hidden = false;
+    const box = root.getBoundingClientRect();
+    const spot = hit.getBoundingClientRect();
+    const left = spot.left + spot.width / 2 - box.left - card.offsetWidth / 2;
+    card.style.left = `${Math.max(0, Math.min(left, root.clientWidth - card.offsetWidth))}px`;
+    card.style.top = `${spot.bottom - box.top + 6}px`;
+  }
+  function addInfoCards(root, ctx) {
+    const card = document.createElement("div");
+    card.className = CARD_CLASS;
+    card.hidden = true;
+    root.append(card);
+    for (const up of ctx.state.upgrades.values()) {
+      if (!up.locked) continue;
+      const at = getComputedStyle(up.el);
+      const hit = document.createElement("span");
+      hit.className = HIT_CLASS;
+      Object.assign(hit.style, { top: at.top, left: at.left, width: at.width, height: at.height });
+      hit.addEventListener("mouseenter", () => {
+        fillCard(card, up, ctx);
+        showCard(root, card, hit);
+      });
+      hit.addEventListener("mouseleave", () => card.hidden = true);
+      hit.addEventListener("click", (e) => {
+        e.stopPropagation();
+        fillCard(card, up, ctx);
+        showCard(root, card, hit);
+      });
+      up.el.after(hit);
+    }
+  }
+  function hideCards() {
+    document.querySelectorAll(`.${CARD_CLASS}`).forEach((c) => c.hidden = true);
+  }
   function centreWheel(root) {
     const viewport = root.querySelector(".flex-viewport");
     const slide = root.querySelector(".updates-grid-slide-wrapper");
@@ -108,6 +217,7 @@
     const status = document.createElement("div");
     status.className = STATUS_CLASS;
     root.querySelector(".treats-bar")?.after(status);
+    addInfoCards(root, { route, never: never2, state, costs });
     if (!route.length) {
       setStatus(status, "Route: no steps in ROUTE.md yet.");
       return;
@@ -138,7 +248,7 @@
     status.dataset.reason = next.reason;
   }
   function clear(root) {
-    root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}`).forEach((n) => n.remove());
+    root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}`).forEach((n) => n.remove());
     root.querySelectorAll(".hbr-route").forEach((n) => n.classList.remove(...MARK_CLASSES));
     root.style.removeProperty(SHIFT_VAR);
   }
@@ -209,6 +319,7 @@
     });
   }
   addStyle(styles_default);
+  document.addEventListener("click", hideCards);
   new MutationObserver(schedule).observe(document.body, { childList: true, subtree: true });
   schedule();
 })();

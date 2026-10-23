@@ -1,7 +1,10 @@
 import { nextStep, progress } from "./route.js";
+import { findUpgrade, tierOf } from "./upgrades.js";
 
 const STATUS_CLASS = "hbr-status";
 const BADGE_CLASS = "hbr-badge";
+const HIT_CLASS = "hbr-hit";
+const CARD_CLASS = "hbr-card";
 const MARK_CLASSES = ["hbr-route", "hbr-done", "hbr-next", "hbr-never"];
 const SHIFT_VAR = "--hbr-wheel-shift";
 const GUIDE_URL = "https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0";
@@ -29,6 +32,67 @@ function setStatus(status, text) {
   status.replaceChildren(`${text} · `, guide);
 }
 
+const fmt = (n) => n.toLocaleString("en-US");
+
+function line(cls, text) {
+  const el = document.createElement("div");
+  el.className = cls;
+  el.textContent = text;
+  return el;
+}
+
+function fillCard(card, up, { route, never, state, costs }) {
+  const info = findUpgrade(`#${up.id}`);
+  const cost = costs[up.id] ?? info?.cost;
+  const step = route.findIndex((s) => s.id === up.id);
+  const unlocksAt = tierOf(up.tier)?.unlocksAt;
+  const plan = never.includes(up.id) ? "Never buy" : step >= 0 ? `Route step ${step + 1}` : null;
+  const wallet = cost == null ? null : cost > state.treats ? `${fmt(cost - state.treats)} treats short` : "affordable";
+  card.replaceChildren(
+    line("hbr-card-title", [up.name, `tier ${up.tier}`, cost != null ? `${fmt(cost)} treats` : null].filter(Boolean).join(" · ")),
+    ...(info ? [line("hbr-card-desc", info.desc), line("hbr-card-flavor", info.flavor)] : []),
+    line("hbr-card-foot", [unlocksAt ? `Unlocks at a ${unlocksAt} basket` : null, plan, wallet].filter(Boolean).join(" · ")),
+  );
+}
+
+function showCard(root, card, hit) {
+  card.hidden = false;
+  const box = root.getBoundingClientRect();
+  const spot = hit.getBoundingClientRect();
+  const left = spot.left + spot.width / 2 - box.left - card.offsetWidth / 2;
+  card.style.left = `${Math.max(0, Math.min(left, root.clientWidth - card.offsetWidth))}px`;
+  card.style.top = `${spot.bottom - box.top + 6}px`;
+}
+
+function addInfoCards(root, ctx) {
+  const card = document.createElement("div");
+  card.className = CARD_CLASS;
+  card.hidden = true;
+  root.append(card);
+  for (const up of ctx.state.upgrades.values()) {
+    if (!up.locked) continue;
+    const at = getComputedStyle(up.el);
+    const hit = document.createElement("span");
+    hit.className = HIT_CLASS;
+    Object.assign(hit.style, { top: at.top, left: at.left, width: at.width, height: at.height });
+    hit.addEventListener("mouseenter", () => {
+      fillCard(card, up, ctx);
+      showCard(root, card, hit);
+    });
+    hit.addEventListener("mouseleave", () => (card.hidden = true));
+    hit.addEventListener("click", (e) => {
+      e.stopPropagation();
+      fillCard(card, up, ctx);
+      showCard(root, card, hit);
+    });
+    up.el.after(hit);
+  }
+}
+
+export function hideCards() {
+  document.querySelectorAll(`.${CARD_CLASS}`).forEach((c) => (c.hidden = true));
+}
+
 export function centreWheel(root) {
   const viewport = root.querySelector(".flex-viewport");
   const slide = root.querySelector(".updates-grid-slide-wrapper");
@@ -50,6 +114,7 @@ export function paint(root, { steps: route, never }, state, costs) {
   const status = document.createElement("div");
   status.className = STATUS_CLASS;
   root.querySelector(".treats-bar")?.after(status);
+  addInfoCards(root, { route, never, state, costs });
 
   if (!route.length) {
     setStatus(status, "Route: no steps in ROUTE.md yet.");
@@ -85,7 +150,7 @@ export function paint(root, { steps: route, never }, state, costs) {
 }
 
 export function clear(root) {
-  root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}`).forEach((n) => n.remove());
+  root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}, .${HIT_CLASS}, .${CARD_CLASS}`).forEach((n) => n.remove());
   root.querySelectorAll(".hbr-route").forEach((n) => n.classList.remove(...MARK_CLASSES));
   root.style.removeProperty(SHIFT_VAR);
 }

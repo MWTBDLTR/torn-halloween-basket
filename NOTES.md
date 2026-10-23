@@ -36,6 +36,13 @@ tiers I to IV in order, so an upgrade's id is its position in the flattened list
 spelling. Imported by both the runtime and `build.mjs`, which validates `ROUTE.md` against it,
 so it must stay free of DOM access.
 
+Each upgrade also carries `cost`, `desc` and `flavor`, and each tier its `unlocksAt` basket
+level, all from [IceBlueFire's Halloween guide](https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0).
+`desc` and `flavor` mirror the `.update-desc` and `.update-flavor` lines of Torn's confirmation
+box. The guide calls the last tier IV upgrade "Summon Cthulhu"; Torn's page says "Summon Him",
+which is the name kept here. A cost seen in the confirmation box (`hbr_costs`) wins over the
+catalog's.
+
 `findUpgrade(ref)` accepts a name in any case or punctuation, or an id as `#7` / `7`.
 
 ## src/basket.js
@@ -94,6 +101,17 @@ Every status line ends with a link to the Halloween guide forum thread (`GUIDE_U
 `setStatus`. It opens in a new tab so the basket stays open. It is a plain link the user
 clicks; the script itself never follows it or fetches anything.
 
+Locked upgrades get an info card: hovering (or tapping) one shows its catalog description,
+cost, the basket level that unlocks its tier, its place in the route and how far short the
+treats held are. Torn only sends an upgrade's description when it is clicked, and a locked
+tier's buttons are `disabled`, so the card is built from the catalog and Torn's buttons are
+left alone. Firefox delivers no mouse events to a disabled button or its children, so each
+locked button gets a transparent `.hbr-hit` sibling at the same absolute position in its slide
+that takes the hover and the tap. A tap stops propagation, so Torn's handlers and the slider
+never see it. There is one `.hbr-card` per panel, filled and positioned under the hovered
+upgrade, clamped to the panel's width, and hidden with the `hidden` attribute, which the
+`MutationObserver` does not watch. `hideCards` hides every card on any click outside a hit.
+
 `centreWheel` fixes an off-centre wheel in narrow windows. Torn's slider gives every slide a
 fixed inline width (420px) and centres the wheel inside it, but in a narrow window the
 slider's visible `.flex-viewport` is narrower (384px at a 757px window), so the wheel sat
@@ -115,6 +133,8 @@ A `ResizeObserver` watches each painted panel's viewport and slides and re-runs
 `centreWheel` when either width changes (window resize, or the slider re-measuring), since
 neither changes the DOM tree the `MutationObserver` watches. Observing an element twice is a
 no-op, so `watchSize` can run on every paint.
+
+A document click listener calls `hideCards`, so tapping anywhere else closes an info card.
 
 `signature` covers everything that changes what would be drawn (treats, locked tiers, each
 upgrade's unlocked/locked state, known costs). Our own nodes are not part of it, so painting
