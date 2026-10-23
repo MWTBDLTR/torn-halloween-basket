@@ -94,6 +94,14 @@ Every status line ends with a link to the Halloween guide forum thread (`GUIDE_U
 `setStatus`. It opens in a new tab so the basket stays open. It is a plain link the user
 clicks; the script itself never follows it or fetches anything.
 
+`centreWheel` fixes an off-centre wheel in narrow windows. Torn's slider gives every slide a
+fixed inline width (420px) and centres the wheel inside it, but in a narrow window the
+slider's visible `.flex-viewport` is narrower (384px at a 757px window), so the wheel sat
+half the difference (18px) right of centre. It sets `--hbr-wheel-shift` on the panel to
+`(viewport - slide) / 2` and the stylesheet moves each `.updates-grid-slide` by that via
+`left`; when the two widths match the shift is 0. CSS alone cannot do it: making the viewport
+a size container for `cqw` units collapses it, because it is a flex item sized by its content.
+
 `isPainted` is true while what `paint` added is still in the DOM. Torn re-renders the panel
 wholesale after an upgrade, which drops our nodes, and that is how the entry point notices.
 
@@ -102,6 +110,11 @@ wholesale after an upgrade, which drops our nodes, and that is how the entry poi
 Entry point. Torn renders the basket panel into the item row when "Use" is clicked and
 re-renders it after every upgrade, so this watches the page with a `MutationObserver` and
 repaints when the panel's content changes, batched to one update per animation frame.
+
+A `ResizeObserver` watches each painted panel's viewport and slides and re-runs
+`centreWheel` when either width changes (window resize, or the slider re-measuring), since
+neither changes the DOM tree the `MutationObserver` watches. Observing an element twice is a
+no-op, so `watchSize` can run on every paint.
 
 `signature` covers everything that changes what would be drawn (treats, locked tiers, each
 upgrade's unlocked/locked state, known costs). Our own nodes are not part of it, so painting

@@ -1,7 +1,7 @@
 import { steps, never } from "virtual:route";
 import css from "./styles.css";
 import { BASKET_SELECTOR, readBasket } from "./basket.js";
-import { paint, isPainted } from "./overlay.js";
+import { paint, isPainted, centreWheel } from "./overlay.js";
 import { rememberCost, knownCosts } from "./storage.js";
 
 function addStyle(text) {
@@ -18,6 +18,12 @@ function signature(state, costs) {
 
 const lastSig = new WeakMap();
 
+const resized = new ResizeObserver(() => document.querySelectorAll(BASKET_SELECTOR).forEach(centreWheel));
+
+function watchSize(root) {
+  for (const el of root.querySelectorAll(".flex-viewport, .updates-grid-slide-wrapper")) resized.observe(el);
+}
+
 function update() {
   for (const root of document.querySelectorAll(BASKET_SELECTOR)) {
     const state = readBasket(root);
@@ -28,6 +34,7 @@ function update() {
     if (lastSig.get(root) === sig && isPainted(root)) continue;
     lastSig.set(root, sig);
     paint(root, { steps, never }, state, costs);
+    watchSize(root);
   }
 }
 

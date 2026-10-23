@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.use-halloween-basket .updates-grid-slide {
+  left: var(--hbr-wheel-shift, 0px);
+}
+
 .use-halloween-basket .hbr-badge {
   position: absolute;
   top: 50%;

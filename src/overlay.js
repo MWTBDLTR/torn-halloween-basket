@@ -3,6 +3,7 @@ import { nextStep, progress } from "./route.js";
 const STATUS_CLASS = "hbr-status";
 const BADGE_CLASS = "hbr-badge";
 const MARK_CLASSES = ["hbr-route", "hbr-done", "hbr-next", "hbr-never"];
+const SHIFT_VAR = "--hbr-wheel-shift";
 const GUIDE_URL = "https://www.torn.com/forums.php#/p=threads&f=61&t=16192843&b=0&a=0";
 
 const REASON_TEXT = {
@@ -28,8 +29,16 @@ function setStatus(status, text) {
   status.replaceChildren(`${text} · `, guide);
 }
 
+export function centreWheel(root) {
+  const viewport = root.querySelector(".flex-viewport");
+  const slide = root.querySelector(".updates-grid-slide-wrapper");
+  if (!viewport?.clientWidth || !slide?.offsetWidth) return root.style.removeProperty(SHIFT_VAR);
+  root.style.setProperty(SHIFT_VAR, `${(viewport.clientWidth - slide.offsetWidth) / 2}px`);
+}
+
 export function paint(root, { steps: route, never }, state, costs) {
   clear(root);
+  centreWheel(root);
 
   for (const id of never) {
     const up = state.upgrades.get(id);
@@ -78,6 +87,7 @@ export function paint(root, { steps: route, never }, state, costs) {
 export function clear(root) {
   root.querySelectorAll(`.${STATUS_CLASS}, .${BADGE_CLASS}`).forEach((n) => n.remove());
   root.querySelectorAll(".hbr-route").forEach((n) => n.classList.remove(...MARK_CLASSES));
+  root.style.removeProperty(SHIFT_VAR);
 }
 
 export function isPainted(root) {
