@@ -1,0 +1,13 @@
+// ==UserScript==
+// @name         Torn Halloween Basket Route
+// @namespace    church-tools
+// @version      {{version}}
+// @author       MrChurch [3654415]
+// @description  Marks the recommended Halloween Basket upgrade route on the basket's upgrade wheel. Read-only: never clicks or requests anything.
+// @match        https://www.torn.com/item.php*
+// @grant        GM_addStyle
+// @grant        GM_getValue
+// @grant        GM_setValue
+// @downloadURL  https://github.com/MWTBDLTR/torn-halloween-basket/raw/main/dist/torn_halloween_basket.user.js
+// @updateURL    https://github.com/MWTBDLTR/torn-halloween-basket/raw/main/dist/torn_halloween_basket.user.js
+// ==/UserScript==

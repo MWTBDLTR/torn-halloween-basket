@@ -1,0 +1,66 @@
+.use-halloween-basket .basket-update.hbr-route {
+  position: relative;
+}
+
+.use-halloween-basket .hbr-badge {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  box-sizing: border-box;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 10px;
+  transition: opacity 0.15s;
+  background: #1b1b1b;
+  border: 1px solid #f39c12;
+  color: #f39c12;
+  font: bold 11px/18px Arial, sans-serif;
+  text-align: center;
+  pointer-events: none;
+}
+
+.use-halloween-basket .basket-update.selected .hbr-badge,
+.use-halloween-basket .basket-update:hover .hbr-badge {
+  opacity: 0;
+}
+
+.use-halloween-basket .hbr-done .hbr-badge {
+  border-color: #555;
+  color: #777;
+}
+
+.use-halloween-basket .hbr-never .hbr-badge {
+  border-color: #c0392b;
+  color: #e74c3c;
+}
+
+.use-halloween-basket .basket-update.hbr-never {
+  opacity: 0.55;
+}
+
+.use-halloween-basket .basket-update.hbr-next {
+  border-radius: 50%;
+  box-shadow: 0 0 0 3px #f39c12, 0 0 14px 4px rgba(243, 156, 18, 0.7);
+}
+
+.use-halloween-basket .hbr-next .hbr-badge {
+  background: #f39c12;
+  color: #111;
+}
+
+.use-halloween-basket .hbr-status {
+  margin: 6px 20px 41px;
+  padding: 6px 10px;
+  border-left: 3px solid #f39c12;
+  background: rgba(0, 0, 0, 0.35);
+  color: #ddd;
+  font: 13px/1.4 Arial, sans-serif;
+}
+
+.use-halloween-basket .hbr-status[data-reason="locked"],
+.use-halloween-basket .hbr-status[data-reason="short"] {
+  border-left-color: #888;
+}

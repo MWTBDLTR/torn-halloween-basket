@@ -1,0 +1,113 @@
+# Code notes
+
+Source files carry no comments, so the built userscript ships without any. Everything that
+would have been a comment lives here, per file. Keep it in step with the code.
+
+## build.mjs
+
+Bundles `src/` into a single Tampermonkey userscript.
+
+- `npm run build` builds once; `npm run watch` rebuilds on any change to `src/` or `ROUTE.md`.
+- `package.json` `version` is the single source of truth for `@version`: `src/meta.txt` is the
+  header template and `{{version}}` is substituted into it.
+- `parseRoute` turns `ROUTE.md` into `{ steps: [{ id, name, tier, note }], never: [id] }`.
+  Numbered items are the route; bulleted items under a heading containing "Never" are the
+  never-buy list. It runs at build time rather than at runtime so a typo in an upgrade name,
+  or an upgrade listed twice, fails the build instead of silently dropping a step.
+- The `route` plugin makes `import { steps, never } from "virtual:route"` resolve to that parsed
+  object. Its path is the bare `ROUTE.md` so no absolute path from the build machine can end up
+  in the bundle.
+- The `clean` plugin is why `write` is false: esbuild hands the output back instead of writing
+  it, and the plugin strips what esbuild itself adds — the `// src/file.js` marker it prints
+  before each module, and the `/* @__PURE__ */` annotations it puts in front of calls such as
+  `new Set()` — then prepends the header and writes the file. esbuild already drops comments
+  from the JS source; it has no option to drop these two. The header is added after cleaning,
+  so the strip can never touch its `//` lines.
+
+## src/meta.txt
+
+The userscript header. The only `//` lines that ship; Tampermonkey needs them.
+
+## src/upgrades.js
+
+The basket's 24 upgrades as Torn renders them (see `fixtures/basket-open.html`), six per tier,
+tiers I to IV in order, so an upgrade's id is its position in the flattened list. Each tier's
+`cls` is the class Torn puts on that tier's slide and buttons — `hhocking` is Torn's own
+spelling. Imported by both the runtime and `build.mjs`, which validates `ROUTE.md` against it,
+so it must stay free of DOM access.
+
+`findUpgrade(ref)` accepts a name in any case or punctuation, or an id as `#7` / `7`.
+
+## src/basket.js
+
+Reads the open basket panel (`div.use-halloween-basket`) into a plain state object. Pure DOM
+reads; nothing here writes to the page.
+
+`readBasket(root)` returns:
+
+| Field | Meaning |
+|---|---|
+| `treats` | treats held (`.available-treats .halloween-text`) |
+| `collected`, `goal` | the "353 / 500 Treats Collected" pair |
+| `lockedTiers` | `Set` of tier labels whose slide has `disabled` |
+| `upgrades` | `Map` id -> `{ id, name, tier, unlocked, selected, locked, el }` |
+| `pending` | `{ id, cost }` while the confirmation box is open, else `null` |
+
+The confirmation box only exists while an upgrade is clicked, and it is the one place the page
+states a cost, which is why `pending` exists.
+
+## src/storage.js
+
+GM storage with a `localStorage` fallback, keys prefixed `hbr_` like the other scripts'
+prefixes. A write that fails (storage unavailable) is ignored: costs are just not remembered.
+
+Upgrade costs are only visible in the confirmation box after clicking an upgrade, so
+`rememberCost` keeps each one seen, as `hbr_costs = { [upgradeId]: treats }`, and
+`knownCosts` reads them back.
+
+## src/route.js
+
+`nextStep(route, state, costs)` decides which step to recommend.
+
+- `route` is the ordered `steps` from `ROUTE.md`, each `{ id, name, tier, note }`.
+- `state` is what `readBasket` returned.
+- `costs` maps upgrade id -> treats, only for upgrades seen in the confirmation box so far; it
+  may be empty.
+- It returns `{ index, step, reason }`, or `null` once every step is unlocked. `reason` is
+  `ready` (buy it now), `short` (its known cost is more than the treats held) or `locked` (its
+  tier is still locked).
+
+A step bought out of order simply counts as done: the recommendation is the first step not yet
+bought. A locked or unaffordable next step is reported rather than skipped, because the route's
+order is the point — buying past it spends treats it is saving for (step 7 -> 8 is a whole
+event of saving). An unknown cost is assumed affordable.
+
+`progress` counts how many route steps are unlocked.
+
+## src/overlay.js
+
+Paints the route onto the basket: a step number on each route upgrade, a ring on the next one,
+a ✕ on never-buy upgrades, and a status line under the treats bar. It only adds nodes and
+classes of its own and `clear` removes exactly those.
+
+`isPainted` is true while what `paint` added is still in the DOM. Torn re-renders the panel
+wholesale after an upgrade, which drops our nodes, and that is how the entry point notices.
+
+## src/index.js
+
+Entry point. Torn renders the basket panel into the item row when "Use" is clicked and
+re-renders it after every upgrade, so this watches the page with a `MutationObserver` and
+repaints when the panel's content changes, batched to one update per animation frame.
+
+`signature` covers everything that changes what would be drawn (treats, locked tiers, each
+upgrade's unlocked/locked state, known costs). Our own nodes are not part of it, so painting
+never re-triggers a paint; a repaint happens only when the signature changed or our nodes are
+gone.
+
+## src/styles.css
+
+- The badge is centred in the 60px upgrade circle. Torn shows the upgrade's name in that same
+  spot on the selected upgrade, so the badge fades out there and on hover.
+- Torn pulls `.updates-grid` up under the treats bar with `margin-top: -35px`. The status
+  note's 41px bottom margin pays that back so the wheel's top circle starts below the note
+  instead of over it.
