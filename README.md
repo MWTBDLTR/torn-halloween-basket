@@ -25,7 +25,8 @@ and click Install. Updates are offered automatically when the version changes.
 ## The route
 
 The route is in [ROUTE.md](ROUTE.md), taken from the Oct 2023 route image
-([route-2023.webp](route-2023.webp)).
+([route-2023.webp](route-2023.webp)). The route order and its notes are by
+[Andyman [471591]](https://www.torn.com/profiles.php?XID=471591).
 
 ## Building
 

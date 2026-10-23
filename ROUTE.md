@@ -11,7 +11,9 @@ The build reads this file and bakes it into the script:
 An unknown or repeated upgrade fails the build. Upgrade ids: I = 1-6, II = 7-12, III = 13-18,
 IV = 19-24 (see `src/upgrades.js`).
 
-Source: the Oct 2023 route image, `route-2023.webp`. Its numbers sit on wheel positions;
+Source: the Oct 2023 route image, `route-2023.webp`, by
+[Andyman [471591]](https://www.torn.com/profiles.php?XID=471591), who worked out the order and
+wrote its notes. Its numbers sit on wheel positions;
 Torn's layer order (`layer-0`..`layer-5`) is upper-left, lower-left, bottom, lower-right,
 upper-right, top, which is what maps them to ids. Step 8 landing on Shadow of Doubt, as the
 image itself labels it, confirms the mapping.
